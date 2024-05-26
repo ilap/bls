@@ -1,0 +1,24 @@
+name: Aiken Tests
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: 🧰 Install Aiken
+        uses: aiken-lang/setup-aiken@v1
+        with:
+          version: v1.0.28-alpha
+
+      - name: 📝 Run fmt
+        run: aiken fmt --check
+
+      - name: 🔬 Run tests
+        run: aiken check -D
+     
