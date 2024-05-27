@@ -13,7 +13,7 @@ Core Functions Implemented
 - [x] **skToPk**: Convert secret key to public key.
 - [x] **sign**: Sign messages with private key.
 - [x] **verify**: Verify signatures with the public key.
-- [x] **aggregate**: Combine multiple signatures.
+- [x] **aggregate_signatures**: Combine multiple signatures.
 - [x] **aggregate_verify**: Verify aggregated signatures.
 
 Aug Functions Implemented
