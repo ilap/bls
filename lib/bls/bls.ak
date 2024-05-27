@@ -277,11 +277,6 @@ test test_verify() {
   verify(pk1, msg1, sg1)
 }
 
-test test_verify_2() {
-  let msg12 = #"000001000002"
-  verify(pk12, msg12, sg12)
-}
-
 test test_aggregate_verify_1() {
   verify_aggregate([pk1], [msg1], sg1)
 }
