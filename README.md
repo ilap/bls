@@ -14,6 +14,7 @@ Core Functions Implemented
 - [x] **sign**: Sign messages with private key.
 - [x] **verify**: Verify signatures with the public key.
 - [x] **aggregate_signatures**: Combine multiple signatures.
+- [x] **aggregate_publickeys**: Combine multiple public keys.
 - [x] **aggregate_verify**: Verify aggregated signatures.
 
 Aug Functions Implemented
@@ -29,7 +30,7 @@ To get started with this library, make sure you have the Aiken environment set u
 Detailed usage examples and API documentation can be found in the docs directory. Here is a quick example to get you started:
 
 ``` gleam
-import ilap/bls.{keygen, skToPk, sign, verify}
+import ilap/bls.{ skToPk, sign, verify}
 
 test test_bls () {
   let sk = #"ed69a93f0cf8c9836be3b67c7eeff416612d45ba39a5c099d48fa668bf558c9c"
@@ -45,7 +46,7 @@ test test_bls () {
 
 ## Resources
 
-- [BLS Signatures Specification](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature#name-aggregate)
+- [BLS Signatures Specification](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature)
 
 
 ## Contributing

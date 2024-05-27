@@ -3,16 +3,17 @@
 //// The module provides functions for verifying an aggregate BLS signature for multiple public keys and messages.
 //// The verification procedure follows the fast aggregate signature verification method described in [this Ethereum Research post](https://ethresear.ch/t/fast-verification-of-multiple-bls-signatures/5407).
 ////
-//// The module assumes that the public keys and messages are provided as byte arrays, and it uses the [aiken/builtin](https://github.com/aiken-lang/aiken-stdlib/tree/main/builtin) and [bls/constants](https://github.com/aiken-lang/aiken-stdlib/tree/main/bls/constants) modules for the underlying cryptographic operations.
+//// The module assumes that the public keys and messages are provided as byte arrays, and it uses the [aiken/prelude/builtin](https://aiken-lang.github.io/prelude/aiken/builtin.html) module for the underlying cryptographic operations.
 
 use aiken/builtin.{
-  bls12_381_final_verify, bls12_381_g1_compress, bls12_381_g1_scalar_mul,
-  bls12_381_g1_uncompress, bls12_381_g2_add, bls12_381_g2_compress,
-  bls12_381_g2_hash_to_group, bls12_381_g2_scalar_mul, bls12_381_g2_uncompress,
-  bls12_381_miller_loop, bls12_381_mul_miller_loop_result, bytearray_to_integer,
+  bls12_381_final_verify, bls12_381_g1_add, bls12_381_g1_compress,
+  bls12_381_g1_scalar_mul, bls12_381_g1_uncompress, bls12_381_g2_add,
+  bls12_381_g2_compress, bls12_381_g2_hash_to_group, bls12_381_g2_scalar_mul,
+  bls12_381_g2_uncompress, bls12_381_miller_loop,
+  bls12_381_mul_miller_loop_result, bytearray_to_integer,
 }
 use aiken/list.{foldl}
-use bls/constants.{dst_basic_G2, point_base_G1, point_zero_G2}
+use bls/constants.{dst_basic_G2, point_base_G1, point_zero_G1, point_zero_G2}
 use bls/utils.{foldl2}
 
 /// This function performs a pairing operation on elements represented by two byte arrays.
@@ -101,7 +102,7 @@ pub fn aggregate_signatures(signatures: List<ByteArray>) -> ByteArray {
   // Check if the list of signatures is empty.
   if list.length(signatures) <= 0 {
     // If the list is empty, fail the function.
-    fail
+    fail @"Cannot aggregate an empty list of signatures."
   } else {
     // Use foldl to aggregate the signatures from left to right.
     foldl(
@@ -114,6 +115,35 @@ pub fn aggregate_signatures(signatures: List<ByteArray>) -> ByteArray {
       },
     )
       |> bls12_381_g2_compress
+  }
+}
+
+/// Aggregates multiple BLS public keys into a single public key.
+/// Uses the **`foldl`** function to iteratively uncompress and add the public keys,
+/// and then compresses the resulting aggregated public key.
+///
+/// Arguments:
+/// * publickeys: List<ByteArray> - A list of BLS public keys to be aggregated.
+///
+/// Returns:
+/// ByteArray - The compressed aggregated BLS public key.
+pub fn aggregate_publickeys(publickeys: List<ByteArray>) -> ByteArray {
+  // Check if the list of signatures is empty.
+  if list.length(publickeys) <= 0 {
+    // If the list is empty, fail the function.
+    fail @"Cannot aggregate an empty list of public keys."
+  } else {
+    // Use foldl to aggregate the signatures from left to right.
+    foldl(
+      publickeys,
+      point_zero_G1,
+      // Start with the identity element in G2.
+      fn(pk, sum) {
+        // For each signature, uncompress it and add it to the current sum.
+        bls12_381_g1_add(bls12_381_g1_uncompress(pk), sum)
+      },
+    )
+      |> bls12_381_g1_compress
   }
 }
 
@@ -218,7 +248,9 @@ const sg12 =
   #"8115fd8e5a24ad8fdab93efad7abc98ee14ea09943249cb048ecdd8295cf7df80c41ca5629904f55dce2efba50af96c6147139f75bbb9b7173ebfd9c92566d890beab4a1dc7fd5b2d8774d9806d596f507834cdb77bedafd9e57833facfde4a1"
 
 // const sg12_3 = #"a736fab8cc9c7c323e063defabbad493bad0c95b6c780a24a6fd53d3a773f9bf59272bb7148006538ce37766bd68667513286a0e50da5e4b331a50fb5e617b059fad0e76de709686076c6177a805f53d4e83fb9cdeaa5fa4eea3a5c021100dd7"
-// const pk12 = #"a390b4ff941bd64d5b09234bffa29fb1ee018c89571e6e8920d23b37c7f43ab00e3cbc2db84c3a749f45d37d32227f38"
+const pk12 =
+  #"a390b4ff941bd64d5b09234bffa29fb1ee018c89571e6e8920d23b37c7f43ab00e3cbc2db84c3a749f45d37d32227f38"
+
 // const pk13 = #"b1354209c656b817f7582a1e8f38510ce05a02a4b28caf93b667b417349eebfabb9aa0dd59a1ddceace92b7fa4bc77b4"
 // const pk31 = #"b1354209c656b817f7582a1e8f38510ce05a02a4b28caf93b667b417349eebfabb9aa0dd59a1ddceace92b7fa4bc77b4"
 // const pk23 = #"b1354209c656b817f7582a1e8f38510ce05a02a4b28caf93b667b417349eebfabb9aa0dd59a1ddceace92b7fa4bc77b4"
@@ -245,6 +277,11 @@ test test_verify() {
   verify(pk1, msg1, sg1)
 }
 
+test test_verify_2() {
+  let msg12 = #"000001000002"
+  verify(pk12, msg12, sg12)
+}
+
 test test_aggregate_verify_1() {
   verify_aggregate([pk1], [msg1], sg1)
 }
@@ -260,4 +297,9 @@ test test_aggregate_verify_3() {
 test test_aggregate_signatures() {
   let agg = aggregate_signatures([sg1, sg2])
   agg == sg12
+}
+
+test test_aggregate_publickeys() {
+  let agg = aggregate_publickeys([pk1, pk2])
+  agg == pk12
 }
