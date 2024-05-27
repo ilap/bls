@@ -1,5 +1,5 @@
 name = "ilap/bls"
-version = "0.1.0"
+version = "0.1.1"
 compiler = "v1.0.28-alpha"
 plutus = "v3"
 license = "Apache-2.0"
