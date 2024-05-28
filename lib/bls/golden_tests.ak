@@ -7,7 +7,7 @@
 use aiken/fuzz.{int_between}
 use aiken/list.{at}
 use aiken/string.{to_bytearray}
-use bls/bls.{sign, skToPk, verify}
+use bls/core.{sign, skToPk, verify}
 use bls/data/test_vectors as tv
 
 /// Dummy

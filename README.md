@@ -53,7 +53,7 @@ test test_bls () {
 
 - **Embedding degree**: 12 i.e. the complexity of the pairing operation.
 - **Field Size (𝑝)**: A large prime number defining the finite field i.e. 𝔽𝑝. The prime in the finite field is 381-bit.
-- **Prime Order (r)**: The number of points on the curve e.g. `𝑦2=𝑥3+b` for `𝑥∈{0,𝔽𝑝−1}`. The number of points on the elliptic curve (excluding the point at infinity) is a prime number.
+- **Prime Order (r)**: The number of points on the curve e.g. `𝑦^2=𝑥^3+4` for `𝑥∈{0,𝔽𝑝−1}`. The number of points on the elliptic curve (excluding the point at infinity) is a prime number.
 - **Security level**: BLS12-381 provides an approximate 128-bit security level, given that its complexity is around `≈√𝑟` i.e. `𝑟≈2^256`.
 - **Private key**: A scalar in `𝔽𝑝` which means `∈{0,𝑝−1}`. The size is 381 bits ~48 bytes.
 - **Identity Element**: The multiplicative identity (1).
@@ -64,8 +64,8 @@ test test_bls () {
   - **Computability**: There exists an efficient algorithm to compute `𝑒(𝑔1,𝑔2)` for all `𝑔1∈𝐺1` and `𝑔2∈𝐺2`.
 
 - **Group Definitions**:
-  - **G1**: This group consists of points on the elliptic curve over the base field `𝐹𝑝`.
-  - **G2**:: This group consists of points on the twisted curve over an extension field `𝐹𝑝^2`.
+  - **G1**: This group consists of points on the elliptic curve over the base field `𝐹𝑝` (`𝑦^2=𝑥^3+4`).
+  - **G2**:: This group consists of points on the twisted curve over an extension field `𝐹𝑝^2` (`𝑦^2=𝑥^3+4(1+i)`).
   - **GT**: This is the multiplicative group of a larger field `𝐹𝑝12`, used as the result of the pairing operation.
 
 ## Resources
