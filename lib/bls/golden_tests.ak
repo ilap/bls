@@ -16,7 +16,7 @@ pub fn golden() {
 }
 
 test golden_skToPk(n via int_between(0, 102)) {
-  expect Some(pk) = at(tv.privs(), n)
+  expect Some(pk) = at(tv.pubs(), n)
   expect Some(sk) = at(tv.privs(), n)
 
   let pkt1 = skToPk(sk)
