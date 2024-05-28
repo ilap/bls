@@ -16,58 +16,26 @@ pub fn golden() {
 }
 
 test golden_skToPk(n via int_between(0, 102)) {
-  let pk =
-    when at(tv.pubs(), n) is {
-      Some(a) -> a
-      _ -> fail @"Pubkey"
-    }
-  let sk =
-    when at(tv.privs(), n) is {
-      Some(a) -> a
-      _ -> fail @"Privs"
-    }
+  expect Some(pk) = at(tv.privs(), n)
+  expect Some(sk) = at(tv.privs(), n)
 
   let pkt1 = skToPk(sk)
   pkt1 == pk
 }
 
 test golden_sign(n via int_between(0, 102)) {
-  let sk =
-    when at(tv.privs(), n) is {
-      Some(a) -> a
-      _ -> fail @"Privs"
-    }
-  let msg =
-    when at(tv.msgs(), n) is {
-      Some(a) -> to_bytearray(a)
-      _ -> fail @"Messages"
-    }
-  let sig =
-    when at(tv.sigs(), n) is {
-      Some(a) -> a
-      _ -> fail @"Signatures"
-    }
+  expect Some(sk) = at(tv.privs(), n)
+  expect Some(msg) = at(tv.msgs(), n)
+  expect Some(sig) = at(tv.sigs(), n)
 
-  let sigt1 = sign(sk, msg)
+  let sigt1 = sign(sk, to_bytearray(msg))
   sigt1 == sig
 }
 
 test golden_verify(n via int_between(0, 102)) {
-  let p =
-    when at(tv.pubs(), n) is {
-      Some(a) -> a
-      _ -> fail @"Pubkey"
-    }
-  let m =
-    when at(tv.msgs(), n) is {
-      Some(a) -> to_bytearray(a)
-      _ -> fail @"Messages"
-    }
-  let r =
-    when at(tv.sigs(), n) is {
-      Some(a) -> a
-      _ -> fail @"Signatures"
-    }
+  expect Some(pk) = at(tv.pubs(), n)
+  expect Some(msg) = at(tv.msgs(), n)
+  expect Some(sig) = at(tv.sigs(), n)
 
-  verify(p, m, r)
+  verify(pk, to_bytearray(msg), sig)
 }
