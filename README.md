@@ -1,4 +1,4 @@
-# High level BSL12-381 functions for Aiken 
+# High level BSL12-381 functions for Aiken
 
 ## Introduction
 
@@ -9,6 +9,7 @@ With this library, you can seamlessly implement advanced smart contracts on the 
 ## TODOS
 
 Core Functions Implemented
+
 - [ ] **keygen**: Generate private key.
 - [x] **skToPk**: Convert secret key to public key.
 - [x] **sign**: Sign messages with private key.
@@ -18,18 +19,22 @@ Core Functions Implemented
 - [x] **aggregate_verify**: Verify aggregated signatures.
 
 Aug Functions Implemented
+
 - [ ] **TBD**
 
 PoP functions Implemented
+
 - [ ] **TBD**
 
 ## Getting Started
+
 To get started with this library, make sure you have the Aiken environment set up and follow the installation instructions provided in the documentation.
 
 ## Usage
+
 Detailed usage examples and API documentation can be found in the docs directory. Here is a quick example to get you started:
 
-``` gleam
+```gleam
 import ilap/bls.{ skToPk, sign, verify}
 
 test test_bls () {
@@ -44,14 +49,33 @@ test test_bls () {
 }
 ```
 
+## BLS12-381 Technical Brief
+
+- **Embedding degree**: 12 i.e. the complexity of the pairing operation.
+- **Field Size (𝑝)**: A large prime number defining the finite field i.e. 𝔽𝑝. The prime in the finite field is 381-bit.
+- **Prime Order (r)**: The number of points on the curve e.g. `𝑦2=𝑥3+b` for `𝑥∈{0,𝔽𝑝−1}`. The number of points on the elliptic curve (excluding the point at infinity) is a prime number.
+- **Security level**: BLS12-381 provides an approximate 128-bit security level, given that its complexity is around `≈√𝑟` i.e. `𝑟≈2^256`.
+- **Private key**: A scalar in `𝔽𝑝` which means `∈{0,𝑝−1}`. The size is 381 bits ~48 bytes.
+- **Identity Element**: The multiplicative identity (1).
+- **Bilinear pairing** : A function `𝑒:𝐺1×𝐺2→𝐺𝑇` with the following properties:
+
+  - **Non-degeneracy**: `𝑒(𝑔1,𝑔2)≠1` for some `𝑔1∈𝐺1` and `𝑔2∈𝐺2`.
+  - **Bilinearity**: `𝑒(𝑎𝑔1,𝑏𝑔2)=𝑒(𝑔1,𝑔2)𝑎𝑏` for all `𝑎,𝑏∈𝔽𝑝` and `𝑔1∈𝐺1` and `𝑔2∈𝐺2`.
+  - **Computability**: There exists an efficient algorithm to compute `𝑒(𝑔1,𝑔2)` for all `𝑔1∈𝐺1` and `𝑔2∈𝐺2`.
+
+- **Group Definitions**:
+  - **G1**: This group consists of points on the elliptic curve over the base field `𝐹𝑝`.
+  - **G2**:: This group consists of points on the twisted curve over an extension field `𝐹𝑝^2`.
+  - **GT**: This is the multiplicative group of a larger field `𝐹𝑝12`, used as the result of the pairing operation.
+
 ## Resources
 
 - [BLS Signatures Specification](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature)
 
-
 ## Contributing
+
 We welcome contributions to enhance the functionality and usabilioty of this library. Please refer to the [CONTRIBUTING.md](./CONTRIBUTING.md) file for guidelines on how to contribute.
 
 ## License
-This project is licensed under the `Apache 2.0 License` - see the [LICENSE](./LICENSE) file for details.
 
+This project is licensed under the `Apache 2.0 License` - see the [LICENSE](./LICENSE) file for details.

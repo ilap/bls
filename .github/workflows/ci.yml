@@ -21,4 +21,3 @@ jobs:
 
       - name: 🔬 Run tests
         run: aiken check -D
-     
