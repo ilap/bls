@@ -240,22 +240,22 @@ const sg2 =
 const pk3 =
   #"8e153a4d9757d148df8a82eca0d8c294789968c7c7a8b7d375690b27ed51d43076178d8769290878fbdb8c0e7a997c4f"
 
-// const sg3 = #"a811f30a85b3544af7988ff05e910d4bb562971df4955647d39e42682313097383011c65f85f74fb297e72c3ca41d01703db9375af025d2091337fdd24b81c52e1591e74cfa44176a3a06e0087a42fb27b6a3d82e12180b978f21881d1ed3455"
-const sg123 =
-  #"a736fab8cc9c7c323e063defabbad493bad0c95b6c780a24a6fd53d3a773f9bf59272bb7148006538ce37766bd68667513286a0e50da5e4b331a50fb5e617b059fad0e76de709686076c6177a805f53d4e83fb9cdeaa5fa4eea3a5c021100dd7"
+const sg3 =
+  #"a811f30a85b3544af7988ff05e910d4bb562971df4955647d39e42682313097383011c65f85f74fb297e72c3ca41d01703db9375af025d2091337fdd24b81c52e1591e74cfa44176a3a06e0087a42fb27b6a3d82e12180b978f21881d1ed3455"
 
 const sg12 =
   #"8115fd8e5a24ad8fdab93efad7abc98ee14ea09943249cb048ecdd8295cf7df80c41ca5629904f55dce2efba50af96c6147139f75bbb9b7173ebfd9c92566d890beab4a1dc7fd5b2d8774d9806d596f507834cdb77bedafd9e57833facfde4a1"
+
+const sg123 =
+  #"a736fab8cc9c7c323e063defabbad493bad0c95b6c780a24a6fd53d3a773f9bf59272bb7148006538ce37766bd68667513286a0e50da5e4b331a50fb5e617b059fad0e76de709686076c6177a805f53d4e83fb9cdeaa5fa4eea3a5c021100dd7"
 
 // const sg12_3 = #"a736fab8cc9c7c323e063defabbad493bad0c95b6c780a24a6fd53d3a773f9bf59272bb7148006538ce37766bd68667513286a0e50da5e4b331a50fb5e617b059fad0e76de709686076c6177a805f53d4e83fb9cdeaa5fa4eea3a5c021100dd7"
 const pk12 =
   #"a390b4ff941bd64d5b09234bffa29fb1ee018c89571e6e8920d23b37c7f43ab00e3cbc2db84c3a749f45d37d32227f38"
 
 // const pk13 = #"b1354209c656b817f7582a1e8f38510ce05a02a4b28caf93b667b417349eebfabb9aa0dd59a1ddceace92b7fa4bc77b4"
-// const pk31 = #"b1354209c656b817f7582a1e8f38510ce05a02a4b28caf93b667b417349eebfabb9aa0dd59a1ddceace92b7fa4bc77b4"
-// const pk23 = #"b1354209c656b817f7582a1e8f38510ce05a02a4b28caf93b667b417349eebfabb9aa0dd59a1ddceace92b7fa4bc77b4"
-// const pk123 = #"8683036a550330afd097ed52f0536a07ee61c7a7621704bfce3097dada49feff523a71976ec6148f30427749839ba33c"
-// const pk321 = #"8683036a550330afd097ed52f0536a07ee61c7a7621704bfce3097dada49feff523a71976ec6148f30427749839ba33c"
+const pk123 =
+  #"8683036a550330afd097ed52f0536a07ee61c7a7621704bfce3097dada49feff523a71976ec6148f30427749839ba33c"
 
 const msg1 = #"000001"
 
@@ -294,7 +294,27 @@ test test_aggregate_signatures() {
   agg == sg12
 }
 
+test test_aggregate_shuffled_signatures_6x() {
+  sg123 == aggregate_signatures([sg1, sg2, sg3]) && sg123 == aggregate_signatures(
+    [sg1, sg3, sg2],
+  ) && sg123 == aggregate_signatures([sg2, sg3, sg1]) && sg123 == aggregate_signatures(
+    [sg2, sg1, sg3],
+  ) && sg123 == aggregate_signatures([sg3, sg1, sg2]) && sg123 == aggregate_signatures(
+    [sg3, sg2, sg1],
+  )
+}
+
 test test_aggregate_publickeys() {
   let agg = aggregate_publickeys([pk1, pk2])
   agg == pk12
+}
+
+test test_aggregate_shuffled_publickes_6x() {
+  pk123 == aggregate_publickeys([pk1, pk2, pk3]) && pk123 == aggregate_publickeys(
+    [pk1, pk3, pk2],
+  ) && pk123 == aggregate_publickeys([pk2, pk3, pk1]) && pk123 == aggregate_publickeys(
+    [pk2, pk1, pk3],
+  ) && pk123 == aggregate_publickeys([pk3, pk1, pk2]) && pk123 == aggregate_publickeys(
+    [pk3, pk2, pk1],
+  )
 }
