@@ -12,7 +12,7 @@ use aiken/builtin.{
   bls12_381_g2_uncompress, bls12_381_miller_loop,
   bls12_381_mul_miller_loop_result, bytearray_to_integer,
 }
-use aiken/list.{foldl}
+use aiken/list.{foldl, length}
 use bls/constants.{dst_basic_G2, point_base_G1, point_zero_G1, point_zero_G2}
 use bls/utils.{foldl2}
 
@@ -99,23 +99,7 @@ pub fn verify(pk: ByteArray, message: ByteArray, signature: ByteArray) -> Bool {
 /// Returns:
 /// ByteArray - The compressed aggregated signature.
 pub fn aggregate_signatures(signatures: List<ByteArray>) -> ByteArray {
-  // Check if the list of signatures is empty.
-  if list.length(signatures) <= 0 {
-    // If the list is empty, fail the function.
-    fail @"Cannot aggregate an empty list of signatures."
-  } else {
-    // Use foldl to aggregate the signatures from left to right.
-    foldl(
-      signatures,
-      point_zero_G2,
-      // Start with the identity element in G2.
-      fn(signature, sum) {
-        // For each signature, uncompress it and add it to the current sum.
-        bls12_381_g2_add(bls12_381_g2_uncompress(signature), sum)
-      },
-    )
-      |> bls12_381_g2_compress
-  }
+  aggregate_g2(signatures)
 }
 
 /// Aggregates multiple BLS public keys into a single public key.
@@ -128,51 +112,32 @@ pub fn aggregate_signatures(signatures: List<ByteArray>) -> ByteArray {
 /// Returns:
 /// ByteArray - The compressed aggregated BLS public key.
 pub fn aggregate_publickeys(publickeys: List<ByteArray>) -> ByteArray {
-  // Check if the list of signatures is empty.
-  if list.length(publickeys) <= 0 {
-    // If the list is empty, fail the function.
-    fail @"Cannot aggregate an empty list of public keys."
+  aggregate_g1(publickeys)
+}
+
+pub fn aggregate_g1(elems: List<ByteArray>) -> ByteArray {
+  if length(elems) <= 0 {
+    fail @"G1: Cannot aggregate an empty list."
   } else {
-    // Use foldl to aggregate the signatures from left to right.
     foldl(
-      publickeys,
+      elems,
       point_zero_G1,
-      // Start with the identity element in G2.
-      fn(pk, sum) {
-        // For each signature, uncompress it and add it to the current sum.
-        bls12_381_g1_add(bls12_381_g1_uncompress(pk), sum)
-      },
+      fn(elem, sum) { bls12_381_g1_add(bls12_381_g1_uncompress(elem), sum) },
     )
       |> bls12_381_g1_compress
   }
 }
 
-/// Recursive function to compute the pairing product for multiple public keys and messages
-///
-/// Parameters:
-/// * `pairs`: List<(ByteArray, ByteArray)> - a list of pairs, where each pair is a public key and a message
-/// * `result`: MillerLoopResult - the current pairing product (C1)
-///
-/// Returns:
-/// MillerLoopResult - the updated pairing product (C1)
-///
-fn recursive_pairing(
-  pairs: List<(ByteArray, ByteArray)>,
-  miller_loop: MillerLoopResult,
-) {
-  when pairs is {
-    [] -> miller_loop
-    [pair, ..pairs] -> {
-      let (pk, message) = pair
-      let p = bls12_381_g1_uncompress(pk)
-      let q = bls12_381_g2_hash_to_group(message, dst_basic_G2)
-
-      let pq = group_pairing(p, q)
-      recursive_pairing(
-        pairs,
-        bls12_381_mul_miller_loop_result(pq, miller_loop),
-      )
-    }
+pub fn aggregate_g2(elems: List<ByteArray>) -> ByteArray {
+  if length(elems) <= 0 {
+    fail @"G2: Cannot aggregate an empty list."
+  } else {
+    foldl(
+      elems,
+      point_zero_G2,
+      fn(elem, sum) { bls12_381_g2_add(bls12_381_g2_uncompress(elem), sum) },
+    )
+      |> bls12_381_g2_compress
   }
 }
 
@@ -304,6 +269,12 @@ test test_aggregate_shuffled_signatures_6x() {
   )
 }
 
+test test_aggregate_shuffled_signatures_2_6x() {
+  sg123 == aggregate_signatures([sg12, sg3]) && sg123 == aggregate_signatures(
+    [sg3, sg12],
+  )
+}
+
 test test_aggregate_publickeys() {
   let agg = aggregate_publickeys([pk1, pk2])
   agg == pk12
@@ -316,5 +287,11 @@ test test_aggregate_shuffled_publickes_6x() {
     [pk2, pk1, pk3],
   ) && pk123 == aggregate_publickeys([pk3, pk1, pk2]) && pk123 == aggregate_publickeys(
     [pk3, pk2, pk1],
+  )
+}
+
+test test_aggregate_shuffled_publickes_2_6x() {
+  pk123 == aggregate_publickeys([pk12, pk3]) && pk123 == aggregate_publickeys(
+    [pk3, pk12],
   )
 }
