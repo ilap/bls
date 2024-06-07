@@ -1,4 +1,4 @@
-# High level BSL12-381 functions for Aiken
+# High level BLS12-381 functions for Aiken
 
 ## Introduction
 
