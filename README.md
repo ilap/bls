@@ -1,5 +1,10 @@
 # High level BLS12-381 functions for Aiken
 
+
+[![Licence](https://img.shields.io/github/license/aiken-lang/stdlib?style=for-the-badge)](https://github.com/ilap/bls/blob/main/LICENSE)
+[![Continuous Integration](https://img.shields.io/github/actions/workflow/status/aiken-lang/stdlib/continuous-integration.yml?style=for-the-badge)](https://github.com/ilap/bls/actions/workflows/ci.yml)
+[![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Online-brightgreen?style=for-the-badge)](https://ilap.github.io/bls/)
+
 ## Introduction
 
 Welcome to the BLS12-381 library for the Aiken Cardano smart-contract language! This library is designed to simplify the use of BLS12-381 signatures in Aiken by extending the language built-ins with a comprehensive suite of data types, functions, constants, and aliases.
