@@ -4,9 +4,9 @@
 //// Test vectors downloaded from [BLS12-381 Github repository](https://github.com/AntelopeIO/bls12-381/blob/6b718d127a2b6095593a85622b4e3f85c3fbbcf6/test/test_vectors.inc#L1)
 ////
 
+use aiken/collection/list.{at}
 use aiken/fuzz.{int_between}
-use aiken/list.{at}
-use aiken/string.{to_bytearray}
+use aiken/primitive/string.{to_bytearray}
 use bls/core.{sign, skToPk, verify}
 use bls/data/test_vectors as tv
 

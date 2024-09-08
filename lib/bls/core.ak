@@ -12,7 +12,7 @@ use aiken/builtin.{
   bls12_381_g2_uncompress, bls12_381_miller_loop,
   bls12_381_mul_miller_loop_result, bytearray_to_integer,
 }
-use aiken/list.{foldl, length}
+use aiken/collection/list.{foldl, length}
 use bls/constants.{dst_basic_G2, point_base_G1, point_zero_G1, point_zero_G2}
 use bls/utils.{foldl2}
 
