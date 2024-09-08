@@ -1,4 +1,4 @@
-name: Aiken Tests
+name: Bls12-381 CI
 
 on:
   push:
@@ -9,12 +9,13 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v3
 
       - name: 🧰 Install Aiken
         uses: aiken-lang/setup-aiken@v1
         with:
-          version: v1.0.28-alpha
+          version: v1.1.0
 
       - name: 📝 Run fmt
         run: aiken fmt --check
