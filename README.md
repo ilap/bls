@@ -106,6 +106,41 @@ test three_party_signature_aggregation_bls () {
 
 </details>
 
+<details>
+<summary>Aggregate signature case</summary>
+
+```aiken
+use bls/core.{aggregate_signatures, sign, skToPk, verify_aggregate}
+
+test three_party_signature_and_public_key_aggregation_bls () {
+  // party1
+  let sk1 = #"ed69a93f0cf8c9836be3b67c7eeff416612d45ba39a5c099d48fa668bf558c9a"
+  let pk1 = skToPk(sk1)
+
+  // party2
+  let sk2 = #"ed69a93f0cf8c9836be3b67c7eeff416612d45ba39a5c099d48fa668bf558c9b"
+  let pk2 = skToPk(sk2)
+
+  // party3
+  let sk3 = #"ed69a93f0cf8c9836be3b67c7eeff416612d45ba39a5c099d48fa668bf558c9c"
+  let pk3 = skToPk(sk3)
+
+  let message = "Hello, Aiken from all parties!"
+
+  let sig1 = sign(sk1, message)
+  let sig2 = sign(sk2, message)
+  let sig3 = sign(sk3, message)
+
+  let sig_aggr = aggregate_signatures([sig1, sig2, sig3])
+
+  let pk_aggr = aggregate_publickeys([pk1, pk2, pk3])
+
+  verify_aggregate([pk_aggr], [message], sig_aggr)
+}
+```
+
+</details>
+
 ## BLS12-381 Technical Brief
 
 - **Embedding degree**: 12 i.e. the complexity of the pairing operation.
