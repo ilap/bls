@@ -39,3 +39,14 @@ test golden_verify(n via int_between(0, 102)) {
 
   verify(pk, to_bytearray(msg), sig)
 }
+
+test readme_test_bls () {
+  let sk = #"ed69a93f0cf8c9836be3b67c7eeff416612d45ba39a5c099d48fa668bf558c9c"
+
+  let pk = skToPk(sk)
+  let message = "Hello, Aiken!"
+
+  let signature = sign(sk, message)
+
+  verify(pk, message, signature)
+}

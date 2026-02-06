@@ -39,8 +39,18 @@ To get started with this library, make sure you have the Aiken environment set u
 
 Detailed usage examples and API documentation can be found in the docs directory. Here is a quick example to get you started:
 
-```gleam
-import ilap/bls.{ skToPk, sign, verify}
+- add the following dependency to aiken.toml
+
+```aiken.toml
+[[dependencies]]
+name = "ilap/bls"
+version = "0.3.0"
+source = "github"
+```
+- use library in Aiken code like below
+
+```aiken
+use ilap/bls/core.{sign, skToPk, verify}
 
 test test_bls () {
   let sk = #"ed69a93f0cf8c9836be3b67c7eeff416612d45ba39a5c099d48fa668bf558c9c"
