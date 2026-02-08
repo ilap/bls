@@ -1,18 +1,72 @@
-use aiken/builtin
+//// @hidden
+//// Utility helpers and shared constants for BLS aggregation tests.
+////
+//// This module defines reusable keys, messages, and helper functions used
+//// across rogue-key and aggregation verification tests. In particular, it
+//// provides a deterministic rogue-key construction method that simulates an
+//// attacker attempting to forge participation in a multi-party aggregation.
 
-/// Rogue‑key construction
+use aiken/builtin
+use aiken/primitive/bytearray
+use bls/g2_basic as bls
+
+/// Common message used in aggregation tests.
+pub const message = "Message to sign"
+
+pub const other_message = "Other message to sign"
+
+pub const another_message = "Another message to sign"
+
+// ------------------------------------------------------------
+// Honest participants
+// ------------------------------------------------------------
+
+/// Private keys for two honest participants.
+pub const sk1 = bytearray.from_int_big_endian(1, 32)
+
+pub const sk2 = bytearray.from_int_big_endian(2, 32)
+
+/// Corresponding public keys.
+pub const pk1 = bls.skToPk(sk1)
+
+pub const pk2 = bls.skToPk(sk2)
+
+// ------------------------------------------------------------
+// Attacker key material
+// ------------------------------------------------------------
+
+/// Independent attacker private key.
+pub const sk_fake = bytearray.from_int_big_endian(999, 32)
+
+/// Attacker public key derived normally from the private key.
+pub const pk_fake = bls.skToPk(sk_fake)
+
+/// Rogue public key constructed to manipulate aggregated verification.
+pub const rogue_pk = construct_rogue_key(pk1, pk2, pk_fake)
+
+// ------------------------------------------------------------
+// Attacker signature
+// ------------------------------------------------------------
+
+/// Signature produced only by the attacker.
+/// Honest participants do not sign in rogue-key attack scenarios.
+pub const sig_fake = bls.sign(sk_fake, message)
+
+/// Construct a rogue public key for aggregation-attack simulations.
 ///
-/// The attacker creates a *malicious public key* that cancels the
-/// honest participants' keys inside the aggregated public key:
+/// The attacker creates a malicious public key that offsets the honest
+/// participants' keys:
 ///
-///     pk3 = pk_fake - (pk1 + pk2)
+///     rogue_pk = pk_fake - (pk1 + pk2)
 ///
 /// After aggregation:
 ///
-///     pk1 + pk2 + pk3 = pk_fake
+///     pk1 + pk2 + rogue_pk = pk_fake
 ///
-/// This makes the verifier believe all three parties signed,
-/// while in reality only the attacker signs.
+/// This allows the attacker to produce a single valid signature under
+/// `pk_fake` that appears to verify as if all participants contributed,
+/// unless mitigations such as PoP, augmented signing, or distinct-message
+/// enforcement are applied.
 pub fn construct_rogue_key(
   pk1: ByteArray,
   pk2: ByteArray,

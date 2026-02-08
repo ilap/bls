@@ -19,7 +19,7 @@ const sg2 =
   #"ac9dcb405d0ed0a6943ef79eec13bfb458c627c0dec66161277f7bccacf8b96ccdb25d6f9842ab256198e7589b50603511978d3c68b41646b7985585ad519910ea064d9bb39a0b5fd3964676563063f8d6836d7a9bb72d86a682c8ef333735ec"
 
 // const sk3 = #"5d59e156ca0924b190d8a5d835a1fc152c297c26da2f3ca9c223ea7486c62c9e"
-const pk3 =
+const rogue_pk =
   #"8e153a4d9757d148df8a82eca0d8c294789968c7c7a8b7d375690b27ed51d43076178d8769290878fbdb8c0e7a997c4f"
 
 const sg3 =
@@ -69,7 +69,7 @@ test core_aggregate_verify_2() {
 
 test core_aggregate_verify_3() {
   core.internal_aggregate_verify(
-    [pk1, pk2, pk3],
+    [pk1, pk2, rogue_pk],
     [msg1, msg2, msg3],
     sg123,
     Basic,
@@ -103,17 +103,17 @@ test core_aggregate_publickeys() {
 }
 
 test core_aggregate_shuffled_publickes_6x() {
-  pk123 == core.internal_aggregate_publickeys([pk1, pk2, pk3]) && pk123 == core.internal_aggregate_publickeys(
-    [pk1, pk3, pk2],
-  ) && pk123 == core.internal_aggregate_publickeys([pk2, pk3, pk1]) && pk123 == core.internal_aggregate_publickeys(
-    [pk2, pk1, pk3],
-  ) && pk123 == core.internal_aggregate_publickeys([pk3, pk1, pk2]) && pk123 == core.internal_aggregate_publickeys(
-    [pk3, pk2, pk1],
+  pk123 == core.internal_aggregate_publickeys([pk1, pk2, rogue_pk]) && pk123 == core.internal_aggregate_publickeys(
+    [pk1, rogue_pk, pk2],
+  ) && pk123 == core.internal_aggregate_publickeys([pk2, rogue_pk, pk1]) && pk123 == core.internal_aggregate_publickeys(
+    [pk2, pk1, rogue_pk],
+  ) && pk123 == core.internal_aggregate_publickeys([rogue_pk, pk1, pk2]) && pk123 == core.internal_aggregate_publickeys(
+    [rogue_pk, pk2, pk1],
   )
 }
 
 test core_aggregate_shuffled_publickes_2_6x() {
-  pk123 == core.internal_aggregate_publickeys([pk12, pk3]) && pk123 == core.internal_aggregate_publickeys(
-    [pk3, pk12],
+  pk123 == core.internal_aggregate_publickeys([pk12, rogue_pk]) && pk123 == core.internal_aggregate_publickeys(
+    [rogue_pk, pk12],
   )
 }
