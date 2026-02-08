@@ -1,6 +1,5 @@
 # High level BLS12-381 functions for Aiken
 
-
 [![Licence](https://img.shields.io/github/license/aiken-lang/stdlib?style=for-the-badge)](https://github.com/ilap/bls/blob/main/LICENSE)
 [![Continuous Integration](https://img.shields.io/github/actions/workflow/status/aiken-lang/stdlib/continuous-integration.yml?style=for-the-badge)](https://github.com/ilap/bls/actions/workflows/ci.yml)
 [![GitHub Pages](https://img.shields.io/badge/GitHub_Pages-Online-brightgreen?style=for-the-badge)](https://ilap.github.io/bls/)
@@ -11,11 +10,27 @@ Welcome to the BLS12-381 library for the Aiken Cardano smart-contract language! 
 
 With this library, you can seamlessly implement advanced smart contracts on the Cardano blockchain utilizing the BLS12-381 signature scheme.
 
+**_API breaking change in v0.3.0_**: The former single `core` module is now **internal**. Public functions are split into the separate modules `g2_basic`, `g2_pop`, and `g2_aug`.
+
 ## TODOS
 
-Core Functions Implemented
+Core Functions
 
 - [ ] **keygen**: Generate private key.
+  > Core functions are internal from now. Use `g2_basic`, `g2_aug` and `g2_pop` functions from now.
+
+G2 Basic Functions Implemented
+
+- [x] **skToPk**: Convert secret key to public key.
+- [x] **sign**: Sign messages with private key.
+- [x] **verify**: Verify signatures with the public key.
+- [x] **aggregate_signatures**: Combine multiple signatures.
+- [x] **aggregate_publickeys**: Combine multiple public keys.
+- [x] **aggregate_verify**: Verify aggregated signatures.
+- [x] **distinct_aggregate_verify**: Verify aggregated signatures for distinct messages.
+
+G2 Aug Functions Implemented
+
 - [x] **skToPk**: Convert secret key to public key.
 - [x] **sign**: Sign messages with private key.
 - [x] **verify**: Verify signatures with the public key.
@@ -23,13 +38,16 @@ Core Functions Implemented
 - [x] **aggregate_publickeys**: Combine multiple public keys.
 - [x] **aggregate_verify**: Verify aggregated signatures.
 
-Aug Functions Implemented
+G2 PoP functions Implemented
 
-- [ ] **TBD**
-
-PoP functions Implemented
-
-- [ ] **TBD**
+- [x] **skToPk**: Convert secret key to public key.
+- [x] **sign**: Sign messages with private key.
+- [x] **verify**: Verify signatures with the public key.
+- [x] **pop_sign**: Generate Proof-of-Possession singature for a public key..
+- [x] **pop_verify**: Verify a Proof-of-Possession signature.
+- [x] **aggregate_signatures**: Combine multiple signatures.
+- [x] **aggregate_publickeys**: Combine multiple public keys.
+- [x] **aggregate_verify**: Verify aggregated signatures.
 
 ## Getting Started
 
@@ -37,10 +55,10 @@ To get started with this library, make sure you have the Aiken environment set u
 
 ## Usage
 
-Detailed usage examples and API documentation can be found in the docs directory. Here is a quick example to get you started:
+Detailed usage examples and API documentation can be found in the [lib/bls/tests](https://github.com/ilap/bls/tree/main/lib/bls/tests) and docs directory (generated with `aiken docs`). Here is a quick example to get you started:
 
 ```gleam
-import ilap/bls.{ skToPk, sign, verify}
+import ilap/bls/g2_basic.{ skToPk, sign, verify}
 
 test test_bls () {
   let sk = #"ed69a93f0cf8c9836be3b67c7eeff416612d45ba39a5c099d48fa668bf558c9c"
@@ -63,7 +81,6 @@ test test_bls () {
 - **Private key**: A scalar in `𝔽𝑝` which means `∈{0,𝑝−1}`. The size is 381 bits ~48 bytes.
 - **Identity Element**: The multiplicative identity (1).
 - **Bilinear pairing** : A function `𝑒:𝐺1×𝐺2→𝐺𝑇` with the following properties:
-
   - **Non-degeneracy**: `𝑒(𝑔1,𝑔2)≠1` for some `𝑔1∈𝐺1` and `𝑔2∈𝐺2`.
   - **Bilinearity**: `𝑒(𝑎𝑔1,𝑏𝑔2)=𝑒(𝑔1,𝑔2)𝑎𝑏` for all `𝑎,𝑏∈𝔽𝑝` and `𝑔1∈𝐺1` and `𝑔2∈𝐺2`.
   - **Computability**: There exists an efficient algorithm to compute `𝑒(𝑔1,𝑔2)` for all `𝑔1∈𝐺1` and `𝑔2∈𝐺2`.

@@ -7,13 +7,8 @@
 use aiken/collection/list.{at}
 use aiken/fuzz.{int_between}
 use aiken/primitive/string.{to_bytearray}
-use bls/core.{sign, skToPk, verify}
-use bls/data/test_vectors as tv
-
-/// Dummy
-pub fn golden() {
-  True
-}
+use bls/g2_basic.{sign, skToPk, verify}
+use bls/tests/data/test_vectors as tv
 
 test golden_skToPk(n via int_between(0, 102)) {
   expect Some(pk) = at(tv.pubs(), n)

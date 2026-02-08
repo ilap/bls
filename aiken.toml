@@ -1,6 +1,6 @@
 name = "ilap/bls"
-version = "0.2.2"
-compiler = "v1.1.0"
+version = "0.3.0"
+compiler = "v1.1.21"
 plutus = "v3"
 license = "Apache-2.0"
 description = "Aiken library implementing high level BLS12-381 cryptographic operations."
@@ -12,7 +12,7 @@ platform = "github"
 
 [[dependencies]]
 name = "aiken-lang/stdlib"
-version = "v2.0.0"
+version = "v3.0.0"
 source = "github"
 
 [[dependencies]]
