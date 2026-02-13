@@ -21,7 +21,8 @@ pub fn skToPk(sk: ByteArray) -> ByteArray {
 
 /// Create an Augmented BLS signature.
 /// The public key is concatenated with the message before signing.
-pub fn sign(sk: ByteArray, pk: ByteArray, message: ByteArray) -> ByteArray {
+pub fn sign(sk: ByteArray, message: ByteArray) -> ByteArray {
+  let pk = skToPk(sk)
   core.internal_sign(sk, builtin.append_bytearray(pk, message), types.Aug)
 }
 

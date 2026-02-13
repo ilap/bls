@@ -186,6 +186,7 @@ pub fn internal_aggregate_verify(
   signature: ByteArray,
   mode: BlsMode,
 ) -> Bool {
+  expect list.length(pks) == list.length(messages)
   expect [pk, ..xs] = pks
   expect [msg, ..ys] = messages
 
