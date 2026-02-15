@@ -8,7 +8,7 @@ use aiken/collection/list.{at}
 use aiken/fuzz.{int_between}
 use aiken/primitive/string.{to_bytearray}
 use bls/api.{Basic}
-use bls/g1/core.{core_sign, sk_to_pk, core_verify}
+use bls/g1/core.{core_sign, core_verify, sk_to_pk}
 use bls/tests/data/g1_vectors as tv
 
 test golden_sk_to_pk(n via int_between(0, 102)) {
