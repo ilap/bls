@@ -14,52 +14,30 @@
 //// > Using Basic mode with unverified or untrusted keys can compromise
 //// > the security of aggregated signatures.
 
-use bls/core
-use bls/types
+use bls/api.{Message, PrivateKey, PublicKey, Signature}
+use bls/g1/core
 use bls/utils
 
 /// Convert a private key to its corresponding public key.
-pub fn skToPk(sk: ByteArray) -> ByteArray {
-  core.internal_skToPk(sk)
+pub fn sk_to_pk(sk: PrivateKey) -> PublicKey {
+  core.sk_to_pk(sk)
 }
 
 /// Create a Basic-mode BLS signature.
 /// Signs the raw message without public-key augmentation.
-pub fn sign(sk: ByteArray, message: ByteArray) -> ByteArray {
-  core.internal_sign(sk, message, types.Basic)
+pub fn sign(sk: PrivateKey, message: Message) -> Signature {
+  core.core_sign(sk, message, api.Basic)
 }
 
 /// Verify a Basic-mode BLS signature.
-pub fn verify(pk: ByteArray, message: ByteArray, sig: ByteArray) -> Bool {
-  core.internal_verify(pk, message, sig, types.Basic)
+pub fn verify(pk: PrivateKey, message: Message, sig: Signature) -> Bool {
+  core.core_verify(pk, message, sig, api.Basic)
 }
 
 /// Aggregate multiple signatures into a single signature.
 /// All signatures must be generated in Basic mode.
-pub fn aggregate_signatures(sigs: List<ByteArray>) -> ByteArray {
-  core.internal_aggregate_signatures(sigs)
-}
-
-/// Aggregate multiple public keys into a single public key.
-/// Keys MUST have been PoP-verified prior to aggregation.
-pub fn aggregate_publickeys(pks: List<ByteArray>) -> ByteArray {
-  core.internal_aggregate_publickeys(pks)
-}
-
-/// Verify an aggregated signature against aggregated participants.
-///
-/// SECURITY NOTE:
-/// This verification is safe only if:
-///   - all public keys were previously validated via PoP, OR
-///   - the system ensures keys cannot be maliciously crafted.
-///
-/// Otherwise the system may be vulnerable to rogue-key attacks.
-pub fn aggregate_verify(
-  pks: List<ByteArray>,
-  messages: List<ByteArray>,
-  sig: ByteArray,
-) -> Bool {
-  core.internal_aggregate_verify(pks, messages, sig, types.Basic)
+pub fn aggregate(sigs: List<Signature>) -> Signature {
+  core.aggregate(sigs)
 }
 
 /// Verify an aggregated signature for Basic BLS mode, enforcing that
@@ -72,14 +50,14 @@ pub fn aggregate_verify(
 ///
 /// Use this function when aggregating arbitrary or untrusted public keys
 /// to prevent potential forgery attacks.
-pub fn aggregate_distinct_verify(
-  pks: List<ByteArray>,
-  messages: List<ByteArray>,
-  sig: ByteArray,
+pub fn aggregate_verify(
+  pks: List<PrivateKey>,
+  messages: List<Message>,
+  sig: Signature,
 ) -> Bool {
   if !utils.all_unique(messages) {
     False
   } else {
-    core.internal_aggregate_verify(pks, messages, sig, types.Basic)
+    core.core_aggregate_verify(pks, messages, sig, api.Basic)
   }
 }

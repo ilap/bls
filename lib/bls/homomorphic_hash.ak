@@ -19,7 +19,7 @@
 //// > Note that the output of the hash function is a compressed byte array of length 48, representing the x-coordinate of the group element in compressed form.
 
 use aiken/builtin.{bls12_381_g1_compress, bls12_381_g1_hash_to_group}
-use bls/core.{aggregate_g1}
+use bls/pairing.{aggregate_g1}
 
 /// This function takes an arbitrary length byte array `message` as input, and it returns a byte array `hash` as output.
 /// 

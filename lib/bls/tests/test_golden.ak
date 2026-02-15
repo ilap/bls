@@ -7,14 +7,15 @@
 use aiken/collection/list.{at}
 use aiken/fuzz.{int_between}
 use aiken/primitive/string.{to_bytearray}
-use bls/g2_basic.{sign, skToPk, verify}
-use bls/tests/data/test_vectors as tv
+use bls/api.{Basic}
+use bls/g1/core.{core_sign, sk_to_pk, core_verify}
+use bls/tests/data/g1_vectors as tv
 
-test golden_skToPk(n via int_between(0, 102)) {
+test golden_sk_to_pk(n via int_between(0, 102)) {
   expect Some(pk) = at(tv.pubs(), n)
   expect Some(sk) = at(tv.privs(), n)
 
-  let pkt1 = skToPk(sk)
+  let pkt1 = sk_to_pk(sk)
   pkt1 == pk
 }
 
@@ -23,7 +24,7 @@ test golden_sign(n via int_between(0, 102)) {
   expect Some(msg) = at(tv.msgs(), n)
   expect Some(sig) = at(tv.sigs(), n)
 
-  let sigt1 = sign(sk, to_bytearray(msg))
+  let sigt1 = core_sign(sk, to_bytearray(msg), Basic)
   sigt1 == sig
 }
 
@@ -32,5 +33,5 @@ test golden_verify(n via int_between(0, 102)) {
   expect Some(msg) = at(tv.msgs(), n)
   expect Some(sig) = at(tv.sigs(), n)
 
-  verify(pk, to_bytearray(msg), sig)
+  core_verify(pk, to_bytearray(msg), sig, Basic)
 }

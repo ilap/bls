@@ -6,64 +6,98 @@
 
 ## Introduction
 
-Welcome to the BLS12-381 library for the Aiken Cardano smart-contract language! This library is designed to simplify the use of BLS12-381 signatures in Aiken by extending the language built-ins with a comprehensive suite of data types, functions, constants, and aliases.
+Welcome to the BLS12-381 library for the Aiken smart-contract language! This library provides a comprehensive implementation of BLS12-381 signatures, enabling advanced cryptographic operations on the Cardano blockchain.
 
-With this library, you can seamlessly implement advanced smart contracts on the Cardano blockchain utilizing the BLS12-381 signature scheme.
+The library implements the three core BLS signature schemes as defined in the [IETF BLS Signature draft](https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature):
 
-**_API breaking change in v0.3.0_**: The former single `core` module is now **internal**. Public functions are split into the separate modules `g2_basic`, `g2_pop`, and `g2_aug`.
+- **Basic** (`g1/basic`): Standard BLS signatures
+- **Message Augmentation** (`g1/aug`): Signatures with message augmentation for domain separation
+- **Proof of Possession** (`g1/pop`): Signatures with PoP for rogue key attack resistance
 
-## TODOS
+### Implementation Status
 
-Core Functions
+Currently, this library implements the **Minimal-pubkey-size** variant as defined in the IETF draft:
 
-- [ ] **keygen**: Generate private key.
-  > Core functions are internal from now. Use `g2_basic`, `g2_aug` and `g2_pop` functions from now.
+- **Public keys**: Points in **G1** (48 bytes)
+- **Signatures**: Points in **G2** (96 bytes)
 
-G2 Basic Functions Implemented
+This approach is **RECOMMENDED** for implementations using signature aggregation, since the size of `(PK_1, ..., PK_n, signature)` is dominated by the public keys even for small n. By keeping public keys in G1 (the smaller group), we minimize the overall size of aggregated verification data.
 
-- [x] **skToPk**: Convert secret key to public key.
-- [x] **sign**: Sign messages with private key.
-- [x] **verify**: Verify signatures with the public key.
-- [x] **aggregate_signatures**: Combine multiple signatures.
-- [x] **aggregate_publickeys**: Combine multiple public keys.
-- [x] **aggregate_verify**: Verify aggregated signatures.
-- [x] **distinct_aggregate_verify**: Verify aggregated signatures for distinct messages.
+**_API Note_**: The core cryptographic primitives are implemented in the `g1/core` module, while the public interfaces are exposed through the scheme-specific modules.
 
-G2 Aug Functions Implemented
+## Implemented Functions
 
-- [x] **skToPk**: Convert secret key to public key.
-- [x] **sign**: Sign messages with private key.
-- [x] **verify**: Verify signatures with the public key.
-- [x] **aggregate_signatures**: Combine multiple signatures.
-- [x] **aggregate_publickeys**: Combine multiple public keys.
-- [x] **aggregate_verify**: Verify aggregated signatures.
+### Core Module (`g1/core`)
 
-G2 PoP functions Implemented
+Low-level cryptographic primitives used by all schemes:
 
-- [x] **skToPk**: Convert secret key to public key.
-- [x] **sign**: Sign messages with private key.
-- [x] **verify**: Verify signatures with the public key.
-- [x] **pop_sign**: Generate Proof-of-Possession singature for a public key..
-- [x] **pop_verify**: Verify a Proof-of-Possession signature.
-- [x] **aggregate_signatures**: Combine multiple signatures.
-- [x] **aggregate_publickeys**: Combine multiple public keys.
-- [x] **aggregate_verify**: Verify aggregated signatures.
+| Function                | Description                      |
+| ----------------------- | -------------------------------- |
+| `sk_to_pk`              | Convert secret key to public key |
+| `validate_key`          | Validate a public key            |
+| `core_sign`             | Core signing primitive           |
+| `vore_verify`           | Core verification primitive      |
+| `aggregate`             | Aggregate multiple signatures    |
+| `core_aggregate_verify` | Core aggregate verification      |
+
+### Basic Scheme (`g1/basic`)
+
+Standard BLS signatures as specified in the IETF draft:
+
+| Function           | Description                                        |
+| ------------------ | -------------------------------------------------- |
+| `sk_to_pk`         | Convert secret key to public key                   |
+| `sign`             | Sign a message with private key                    |
+| `verify`           | Verify a signature with public key                 |
+| `aggregate`        | Combine multiple signatures                        |
+| `aggregate_verify` | Verify aggregated signatures for distinct messages |
+
+### Message Augmentation Scheme (`g1/aug`)
+
+Signatures with message augmentation for domain separation:
+
+| Function           | Description                                 |
+| ------------------ | ------------------------------------------- |
+| `sk_to_pk`         | Convert secret key to public key            |
+| `sign`             | Sign a message with private key (augmented) |
+| `verify`           | Verify a signature with public key          |
+| `aggregate`        | Combine multiple signatures                 |
+| `aggregate_verify` | Verify aggregated signatures                |
+
+### Proof of Possession Scheme (`g1/pop`)
+
+Signatures with PoP for rogue key attack resistance:
+
+| Function           | Description                                             |
+| ------------------ | ------------------------------------------------------- |
+| `sk_to_pk`         | Convert secret key to public key                        |
+| `sign`             | Sign a message with private key                         |
+| `verify`           | Verify a signature with public key                      |
+| `pop_prove`        | Generate Proof-of-Possession signature for a public key |
+| `pop_verify`       | Verify a Proof-of-Possession signature                  |
+| `aggregate`        | Combine multiple signatures                             |
+| `aggregate_verify` | Verify aggregated signatures                            |
 
 ## Getting Started
 
-To get started with this library, make sure you have the Aiken environment set up and follow the installation instructions provided in the documentation.
+To get started with this library, make sure you have the Aiken environment set up and add this library to your `aiken.toml`:
+
+```toml
+[dependencies]
+ilap/bls = { version = "0.4.0" }
+```
 
 ## Usage
 
 Detailed usage examples and API documentation can be found in the [lib/bls/tests](https://github.com/ilap/bls/tree/main/lib/bls/tests) and docs directory (generated with `aiken docs`). Here is a quick example to get you started:
 
-```gleam
-import ilap/bls/g2_basic.{ skToPk, sign, verify}
+```aiken
+use ilap/bls/g1/basic.{ sk_to_pk, sign, verify}
 
 test test_bls () {
   let sk = #"ed69a93f0cf8c9836be3b67c7eeff416612d45ba39a5c099d48fa668bf558c9c"
 
-  let pk = skToPk(sk)
+  let pk = sk_to_pk(sk)
   let message = "Hello, Aiken!"
 
   let signature = sign(sk, message)

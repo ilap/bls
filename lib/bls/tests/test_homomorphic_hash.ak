@@ -7,7 +7,7 @@ use bls/homomorphic_hash.{homomorphic_hash}
 /// Test
 const my_dst: ByteArray = "my_custom_dst"
 
-test homomorphic_hash_basic() {
+test hash_homomorphic_basic_success() {
   let h1 = homomorphic_hash("message1", my_dst)
   let h2 = homomorphic_hash("message2", my_dst)
 
@@ -29,7 +29,7 @@ test homomorphic_hash_basic() {
   aggregated_hash == expected_aggregated_hash
 }
 
-test homomorphic_hash_subtract() {
+test hash_homomorphic_subtract_success() {
   let h1 = homomorphic_hash("message1", my_dst)
   let h2 = homomorphic_hash("message2", my_dst)
   let h3 = homomorphic_hash("message3", my_dst)
@@ -48,7 +48,7 @@ test homomorphic_hash_subtract() {
   ah12 == bls12_381_g1_compress(epxected_orig)
 }
 
-test homomorphic_hash_shuffle() {
+test hash_homomorphic_shuffle_success() {
   let h1 = homomorphic_hash("message1", my_dst)
   let h2 = homomorphic_hash("message2", my_dst)
   let h3 = homomorphic_hash("message3", my_dst)

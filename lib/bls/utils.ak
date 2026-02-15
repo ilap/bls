@@ -1,6 +1,8 @@
-use aiken/builtin
+use aiken/builtin.{bytearray_to_integer}
 use aiken/cbor
 use aiken/collection/list
+use aiken/crypto/bls12_381/scalar
+use bls/api
 
 /// Reduce two lists simultaneously from left to right using an accumulator.
 ///
@@ -66,4 +68,25 @@ pub fn all_unique(xs: List<ByteArray>) -> Bool {
         all_unique(rest)
       }
   }
+}
+
+/// Converts a secret key (sk) from its byte representation into a scalar
+/// suitable for elliptic-curve operations.
+///
+/// Validates that:
+/// - the key has the expected byte length, and
+/// - the resulting scalar lies in the valid range `(0, prime_order)`.
+///
+/// Scalars outside this range (including zero) would produce invalid
+/// curve points (e.g., the point at infinity).
+pub fn sk_to_scalar(sk: ByteArray) -> Int {
+  // Ensure private key has the expected length
+  expect builtin.length_of_bytearray(sk) == api.privkey_len
+
+  let scalar = bytearray_to_integer(True, sk)
+
+  // Ensure scalar is within the valid curve order range
+  expect scalar > 0 && scalar < scalar.field_prime
+
+  scalar
 }

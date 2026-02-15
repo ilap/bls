@@ -7,8 +7,9 @@
 //// attacker attempting to forge participation in a multi-party aggregation.
 
 use aiken/builtin
+use aiken/crypto/bls12_381/scalar.{field_prime}
 use aiken/primitive/bytearray
-use bls/g2_basic as bls
+use bls/g1/basic as bls
 
 /// Common message used in aggregation tests.
 pub const message = "Message to sign"
@@ -22,14 +23,22 @@ pub const another_message = "Another message to sign"
 // ------------------------------------------------------------
 
 /// Private keys for two honest participants.
+pub const zero_sk = bytearray.from_int_big_endian(0, 32)
+
+pub const prime_order_sk = bytearray.from_int_big_endian(field_prime, 32)
+
 pub const sk1 = bytearray.from_int_big_endian(1, 32)
 
 pub const sk2 = bytearray.from_int_big_endian(2, 32)
 
-/// Corresponding public keys.
-pub const pk1 = bls.skToPk(sk1)
+pub const sk3 = bytearray.from_int_big_endian(2, 32)
 
-pub const pk2 = bls.skToPk(sk2)
+/// Corresponding public keys.
+pub const pk1 = bls.sk_to_pk(sk1)
+
+pub const pk2 = bls.sk_to_pk(sk2)
+
+pub const pk3 = bls.sk_to_pk(sk3)
 
 // ------------------------------------------------------------
 // Attacker key material
@@ -39,7 +48,7 @@ pub const pk2 = bls.skToPk(sk2)
 pub const sk_fake = bytearray.from_int_big_endian(999, 32)
 
 /// Attacker public key derived normally from the private key.
-pub const pk_fake = bls.skToPk(sk_fake)
+pub const pk_fake = bls.sk_to_pk(sk_fake)
 
 /// Rogue public key constructed to manipulate aggregated verification.
 pub const rogue_pk = construct_rogue_key(pk1, pk2, pk_fake)
