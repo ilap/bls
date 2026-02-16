@@ -33,6 +33,7 @@ Low-level cryptographic primitives used by all schemes:
 
 | Function                | Description                      |
 | ----------------------- | -------------------------------- |
+| `key_gen`               | Generate secret key from random  |
 | `sk_to_pk`              | Convert secret key to public key |
 | `validate_key`          | Validate a public key            |
 | `core_sign`             | Core signing primitive           |

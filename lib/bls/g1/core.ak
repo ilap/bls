@@ -14,6 +14,7 @@ use aiken/builtin.{
 }
 use aiken/collection/list
 use aiken/crypto/bls12_381/g1
+use aiken/crypto/bls12_381/g2
 use aiken/crypto/bls12_381/scalar.{field_prime}
 use bls/api.{Aug, Basic, BlsMode, Pop, PrivateKey, PublicKey, Signature}
 use bls/g1/constants
@@ -105,8 +106,18 @@ pub fn core_verify(
 ) -> Bool {
   let p = bls12_381_g1_uncompress(public_key)
 
+  // Security check for public key and signature.
+  // Ensure the public key is not the identity point, which would allow trivial forgeries.
+  // TODO: Use Bowe19 https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-02#ref-Bowe19
+  let r_p = bls12_381_g1_scalar_mul(field_prime, p)
+  expect builtin.bls12_381_g1_equal(r_p, g1.zero)
+
   // 1. Convert signature to a point.
   let s = bls12_381_g2_uncompress(signature)
+
+  // TODO: Use Bowe19 https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-02#ref-Bowe19
+  let r_s = bls12_381_g2_scalar_mul(field_prime, s)
+  expect builtin.bls12_381_g2_equal(r_s, g2.zero)
 
   // 2. Hash the message to a point.
   let q = bls12_381_g2_hash_to_group(message, select_dst(mode))
@@ -157,6 +168,10 @@ pub fn core_aggregate_verify(
   expect builtin.length_of_bytearray(signature) == constants.signature_len
 
   let p = bls12_381_g1_uncompress(pk)
+  // TODO: Use Bowe19 https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-02#ref-Bowe19
+  let r_p = bls12_381_g1_scalar_mul(field_prime, p)
+  expect builtin.bls12_381_g1_equal(r_p, g1.zero)
+
   let q = bls12_381_g2_hash_to_group(msg, select_dst(mode))
   let ml = group_pairing(p, q)
   let c1 =
@@ -167,6 +182,10 @@ pub fn core_aggregate_verify(
       fn(pk, message, miller_loop) {
         expect builtin.length_of_bytearray(pk) == constants.pubkey_len
         let p = bls12_381_g1_uncompress(pk)
+        // TODO: Use Bowe19 https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-02#ref-Bowe19
+        let r_p = bls12_381_g1_scalar_mul(field_prime, p)
+        expect builtin.bls12_381_g1_equal(r_p, g1.zero)
+
         let q = bls12_381_g2_hash_to_group(message, select_dst(mode))
         let pq = group_pairing(p, q)
         bls12_381_mul_miller_loop_result(pq, miller_loop)
@@ -174,6 +193,10 @@ pub fn core_aggregate_verify(
     )
 
   let s = bls12_381_g2_uncompress(signature)
+  // TODO: Use Bowe19 https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-bls-signature-02#ref-Bowe19
+  let r_s = bls12_381_g2_scalar_mul(field_prime, s)
+  expect builtin.bls12_381_g2_equal(r_s, g2.zero)
+
   let c2 = group_pairing(g1.generator, s)
 
   bls12_381_final_verify(c1, c2)

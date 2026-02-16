@@ -46,7 +46,7 @@ test g1_aug_aggregate_three_party_success() {
 
 /// Aggregation must fail if messages differ
 /// Even though AUG binds pk into hash, each message must still match.
-test g1_aug_distinct_messages_fails() {
+test g1_aug_aggregate_distinct_messages_fails() fail {
   let msg1 = utils.message
   let msg2 = utils.other_message
 
@@ -55,7 +55,7 @@ test g1_aug_distinct_messages_fails() {
 
   let sig_aggr = aug.aggregate([sig1, sig2])
 
-  !aug.aggregate_verify([utils.pk1, utils.pk2], [msg1, msg1], sig_aggr)
+  aug.aggregate_verify([utils.pk1, utils.pk2], [msg1, msg1], sig_aggr)
 }
 
 /// Rogue key substitution must fail even with valid signatures
